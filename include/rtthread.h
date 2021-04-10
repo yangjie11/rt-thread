@@ -260,6 +260,11 @@ void rt_memory_info(rt_uint32_t *total,
                     rt_uint32_t *used,
                     rt_uint32_t *max_used);
 
+// if rt_using_userheap?????? pkg_using tlsf????
+void *rt_system_heap_add(void *begin_addr, void *end_addr);
+void rt_system_heap_remove(void *heap);
+///----
+
 #ifdef RT_USING_SLAB
 void *rt_page_alloc(rt_size_t npages);
 void rt_page_free(void *addr, rt_size_t npages);

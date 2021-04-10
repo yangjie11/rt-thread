@@ -16,6 +16,9 @@
 #define RT_USING_IDLE_HOOK
 #define RT_IDLE_HOOK_LIST_SIZE 4
 #define IDLE_THREAD_STACK_SIZE 256
+
+/* kservice optimization */
+
 #define RT_DEBUG
 #define RT_DEBUG_COLOR
 
@@ -30,7 +33,7 @@
 /* Memory Management */
 
 #define RT_USING_MEMPOOL
-#define RT_USING_SMALL_MEM
+#define RT_USING_USERHEAP
 #define RT_USING_HEAP
 
 /* Kernel Device Object */
@@ -39,7 +42,7 @@
 #define RT_USING_CONSOLE
 #define RT_CONSOLEBUF_SIZE 256
 #define RT_CONSOLE_DEVICE_NAME "uart1"
-#define RT_VER_NUM 0x40002
+#define RT_VER_NUM 0x40003
 #define ARCH_ARM
 #define RT_USING_CPU_FFS
 #define ARCH_ARM_CORTEX_M
@@ -141,13 +144,30 @@
 /* system packages */
 
 
+/* Micrium: Micrium software products porting for RT-Thread */
+
+#define PKG_USING_TLSF
+#define PKG_USING_TLSF_LATEST_VERSION
+
 /* peripheral libraries and drivers */
+
+
+/* AI packages */
 
 
 /* miscellaneous packages */
 
 
 /* samples: kernel and components samples */
+
+
+/* entertainment: terminal games and other interesting software packages */
+
+
+/* Privated Packages of RealThread */
+
+
+/* Network Utilities */
 
 #define SOC_FAMILY_STM32
 #define SOC_SERIES_STM32L4
