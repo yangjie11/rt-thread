@@ -111,9 +111,9 @@ RTM_EXPORT(close);
  * may be reach the end of file, please check errno.
  */
 #if defined(RT_USING_NEWLIB) && defined(_EXFUN)
-_READ_WRITE_RETURN_TYPE _EXFUN(read, (int fd, void *buf, size_t len))
+    _READ_WRITE_RETURN_TYPE _EXFUN(read, (int fd, void *buf, size_t len))
 #else
-int read(int fd, void *buf, size_t len)
+    int read(int fd, void *buf, size_t len)
 #endif
 {
     int result;
@@ -155,9 +155,9 @@ RTM_EXPORT(read);
  * @return the actual written data buffer length.
  */
 #if defined(RT_USING_NEWLIB) && defined(_EXFUN)
-_READ_WRITE_RETURN_TYPE _EXFUN(write, (int fd, const void *buf, size_t len))
+    _READ_WRITE_RETURN_TYPE _EXFUN(write, (int fd, const void *buf, size_t len))
 #else
-int write(int fd, const void *buf, size_t len)
+    int write(int fd, const void *buf, size_t len)
 #endif
 {
     int result;
@@ -586,8 +586,8 @@ int mkdir(const char *path, mode_t mode)
 RTM_EXPORT(mkdir);
 
 #ifdef RT_USING_FINSH
-#include <finsh.h>
-FINSH_FUNCTION_EXPORT(mkdir, create a directory);
+    #include <finsh.h>
+    FINSH_FUNCTION_EXPORT(mkdir, create a directory);
 #endif
 
 /**
@@ -901,7 +901,7 @@ int chdir(const char *path)
 RTM_EXPORT(chdir);
 
 #ifdef RT_USING_FINSH
-FINSH_FUNCTION_EXPORT_ALIAS(chdir, cd, change current working directory);
+    FINSH_FUNCTION_EXPORT_ALIAS(chdir, cd, change current working directory);
 #endif
 #endif
 
@@ -946,5 +946,140 @@ char *getcwd(char *buf, size_t size)
     return buf;
 }
 RTM_EXPORT(getcwd);
+
+
+char *realpath(const char *path, char *resolved_path)
+{
+
+    int fd;
+    int length;
+    struct dfs_fd *d;
+    char *path_name = (char *)path;
+    char *fullpath = NULL;
+    struct dirent dirent;
+    struct stat stat;
+    fd = open(path_name, O_WRONLY);
+
+    d = fd_get(fd);
+    if (d != NULL)
+    {
+        memset(&dirent, 0, sizeof(struct dirent));
+        length = dfs_file_getdents(d, &dirent, sizeof(struct dirent));
+        if (length > 0)
+        {
+            memset(&stat, 0, sizeof(struct stat));
+
+            fullpath = dfs_normalize_path(path, dirent.d_name);
+            if (fullpath == NULL)
+            {
+                return 0;
+            }
+            strcpy(resolved_path, fullpath);
+
+        }
+        close(fd);
+        return 0;
+    }
+}
+
+FILE *fdopen(int fildes, const char *mode)
+{
+    int result;
+    struct dfs_fd *d;
+
+    d = fd_get(fildes);
+    if (d == NULL)
+    {
+        rt_set_errno(-EBADF);
+        return NULL;
+    }
+}
+
+int gethostname(char *name, size_t len)
+{
+    if (len < sizeof("RT-Thread"))
+    {
+        strcpy(name, "err");
+        return -1;
+    }
+    strcpy(name, "RT-Thread");
+    return 0;
+}
+//int isatty(int desc)  //multiply defined by unistd.o
+//{
+
+//}
+
+
+//readlink("/modules/pass1", buf, sizeof(buf) - 1))
+ssize_t readlink(const char *restrict path, char *restrict buf, size_t bufsize)
+{
+
+}
+
+
+/*
+The truncate() function shall cause the regular file named by path
+to have a size which shall be equal to length bytes.
+
+If the file previously was larger than length, the extra data is discarded.
+If the file was previously shorter than length, its size is increased,
+and the extended area appears as if it were zero-filled.
+*/
+int truncate(const char *path, off_t length)
+{
+    int fd;
+    struct dfs_fd *d;
+    char *path_name = (char *)path;
+
+    fd = open(path_name, O_WRONLY);
+
+    d = fd_get(fd);
+    if (d != NULL)
+    {
+        dfs_file_ftruncate(d, length);
+
+    }
+    close(fd);
+}
+
+
+/*
+The unlinkat() function shall be equivalent to the unlink() or rmdir() function except
+in the case where path specifies a relative path.
+
+In this case the directory entry to be removed is determined relative to the directory
+associated with the file descriptor fd instead of the current working directory.
+
+If the access mode of the open file description associated with the file descriptor is not O_SEARCH,
+the function shall check whether directory searches are permitted using the current permissions of the directory underlying the file descriptor.
+If the access mode is O_SEARCH, the function shall not perform the check.
+*/
+int unlinkat(int fd, const char *pathname, int flag)
+{
+    int result;
+    if (flag == 0)
+    {
+        /* delete files */
+        result = dfs_file_unlink(pathname);
+        if (result < 0)
+        {
+            rt_set_errno(result);
+            return -1;
+        }
+    }
+    else
+    {
+        return -1;
+    }
+    
+    return 0;
+}
+
+
+long sysconf (int name)
+{
+
+}
 
 /* @} */

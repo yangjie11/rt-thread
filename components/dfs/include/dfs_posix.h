@@ -72,6 +72,15 @@ int access(const char *path, int amode);
 int pipe(int fildes[2]);
 int mkfifo(const char *path, mode_t mode);
 
+char *realpath(const char *path, char *resolved_path);
+FILE *fdopen(int fildes,const char * mode);
+int gethostname(char *name, size_t len);
+//int isatty(int desc);
+ssize_t readlink(const char *restrict path, char *restrict buf, size_t bufsize);
+long sysconf (int name);
+int truncate(const char *path, off_t length);
+//int unlinkat (int fd,const char* pathname, int flag);
+
 #ifdef __cplusplus
 }
 #endif

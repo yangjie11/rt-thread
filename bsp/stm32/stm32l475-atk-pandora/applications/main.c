@@ -12,6 +12,9 @@
 #include <rtdevice.h>
 #include <board.h>
 
+#include <stdio.h>
+#include <sys/time.h>
+
 /* defined the LED0 pin: PE7 */
 #define LED0_PIN    GET_PIN(E, 7)
 

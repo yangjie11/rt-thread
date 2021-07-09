@@ -91,10 +91,9 @@ static int serial_fops_ioctl(struct dfs_fd *fd, int cmd, void *args)
     device = (rt_device_t)fd->data;
     switch (cmd)
     {
-    case FIONREAD:
-        break;
-    case FIONWRITE:
-        break;
+//    case FIONREAD:
+//        break;
+//    case FIONWRITE:        break;
     }
 
     return rt_device_control(device, cmd, args);
