@@ -13,6 +13,7 @@
 #include <dfs_posix.h>
 #include "dfs_private.h"
 
+
 /**
  * @addtogroup FsPosixApi
  */
@@ -917,9 +918,13 @@ RTM_EXPORT(chdir);
 int access(const char *path, int amode)
 {
     struct stat sb;
+#ifndef _WIN32
     if (stat(path, &sb) < 0)
         return -1; /* already sets errno */
-
+#else
+    if (dfs_file_stat(path, &sb) < 0)
+        return -1;
+#endif
     /* ignore R_OK,W_OK,X_OK condition */
     return 0;
 }
@@ -947,17 +952,26 @@ char *getcwd(char *buf, size_t size)
 }
 RTM_EXPORT(getcwd);
 
+/*
+Upon successful completion, realpath() shall return a pointer to the buffer containing the resolved name. 
+Otherwise, realpath() shall return a null pointer and set errno to indicate the error.
 
+If the resolved_name argument is a null pointer, the pointer returned by realpath() can be passed to free().
+
+If the resolved_name argument is not a null pointer and the realpath() function fails, 
+the contents of the buffer pointed to by resolved_name are undefined.
+*/
 char *realpath(const char *path, char *resolved_path)
 {
-
     int fd;
     int length;
     struct dfs_fd *d;
     char *path_name = (char *)path;
+
     char *fullpath = NULL;
     struct dirent dirent;
     struct stat stat;
+    
     fd = open(path_name, O_WRONLY);
 
     d = fd_get(fd);
@@ -972,20 +986,25 @@ char *realpath(const char *path, char *resolved_path)
             fullpath = dfs_normalize_path(path, dirent.d_name);
             if (fullpath == NULL)
             {
-                return 0;
+                return NULL;
             }
+
             strcpy(resolved_path, fullpath);
 
         }
         close(fd);
         return 0;
     }
+    return fullpath;
 }
 
+//转换成功时返回指向该流的文件指针。失败则返回NULL
 FILE *fdopen(int fildes, const char *mode)
 {
+    FILE *fp;
     int result;
     struct dfs_fd *d;
+    char *path_name;
 
     d = fd_get(fildes);
     if (d == NULL)
@@ -993,6 +1012,26 @@ FILE *fdopen(int fildes, const char *mode)
         rt_set_errno(-EBADF);
         return NULL;
     }
+    
+    
+//    fp->__FILE_opaque = 
+
+  //  for(i=,i>0,i--)
+        
+    
+    
+////    path_name = readlink();
+//    
+//    
+//    
+//    fp = fopen(path_name, mode);
+//    if (fp == NULL) 
+//    {
+//        return NULL;
+//    }
+//    fclose(fp);
+
+    return fp;
 }
 
 int gethostname(char *name, size_t len)
@@ -1005,16 +1044,13 @@ int gethostname(char *name, size_t len)
     strcpy(name, "RT-Thread");
     return 0;
 }
-//int isatty(int desc)  //multiply defined by unistd.o
-//{
-
-//}
 
 
 //readlink("/modules/pass1", buf, sizeof(buf) - 1))
+//执行成功则传符号连接所指的文件路径字符串，失败则返回-1，错误代码存于errno。
 ssize_t readlink(const char *restrict path, char *restrict buf, size_t bufsize)
 {
-
+    return 0;
 }
 
 
@@ -1038,9 +1074,9 @@ int truncate(const char *path, off_t length)
     if (d != NULL)
     {
         dfs_file_ftruncate(d, length);
-
     }
     close(fd);
+    return 0;
 }
 
 
@@ -1072,13 +1108,14 @@ int unlinkat(int fd, const char *pathname, int flag)
     {
         return -1;
     }
-    
+
     return 0;
 }
 
 
-long sysconf (int name)
+long sysconf(int name)
 {
+    return 0;
 
 }
 

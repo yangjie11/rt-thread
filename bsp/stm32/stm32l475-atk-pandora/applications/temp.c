@@ -6,6 +6,8 @@
 #include "dfs_private.h"
 #include <sys/time.h>
 #include <unistd.h>
+#include <rtlibc.h>
+
 /*修改文件存储时间(微秒级)*/
 int utimes(const char *path, const struct timeval times[2])
 {
@@ -27,19 +29,23 @@ int readdir_r(DIR *dirp, struct dirent *entry, struct dirent **result)
 /*改变文件的读写许可设置*/
 int chmod(const char * path, mode_t mode)
 {
+    
 
 }
 
 /*会依参数mode权限来更改参数fildes所指文件的权限*/
 int fchmod(int fildes,mode_t mode)
 {
-
+    struct dfs_fd *d;
+    
+    d = fd_get(fildes);
+    if (d != NULL)
+    {
+        d->flags = mode;
+    }   
+    return 0;
 }
-/*将参数fildes所指的文件状态，复制到参数buf所指的结构中。
-Fstat()与stat()作用完全相同，不同处在于传入的参数为已打开的文件描述词*/
-//int fstat(int fildes,struct stat *buf)
-//{
-//}
+
 
 /*获取一些文件相关的信息*/
 int lstat(const char *path, struct stat *buf)
@@ -60,20 +66,20 @@ nanosleep可以很好的保留中断时剩余时间,是比sleep()函数更高精
 */
 int nanosleep(const struct timespec *rqtp, struct timespec *rmtp)
 {
-    uint16_t time_ms = rqtp->tv_sec*1000+1;
-    rt_thread_mdelay(time_ms);
-    
-        if (rt_thread_self() != RT_NULL)
-    {
-        rt_thread_mdelay(usec / 1000u);
-    }
-    else  /* scheduler has not run yet */
-    {
-        rt_hw_us_delay(usec / 1000u);
-    }
-    rt_hw_us_delay(usec % 1000u);
+//    uint16_t time_ms = rqtp->tv_sec*1000+1;
+//    rt_thread_mdelay(time_ms);
+//    
+//        if (rt_thread_self() != RT_NULL)
+//    {
+//        rt_thread_mdelay(usec / 1000u);
+//    }
+//    else  /* scheduler has not run yet */
+//    {
+//        rt_hw_us_delay(usec / 1000u);
+//    }
+//    rt_hw_us_delay(usec % 1000u);
 
-    return 0;
+//    return 0;
 
 }
 

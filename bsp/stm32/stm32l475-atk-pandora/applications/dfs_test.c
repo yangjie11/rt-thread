@@ -3,6 +3,11 @@
 #include <rtdevice.h>
 #include <board.h>
 #include <dfs_posix.h>
+#include <unistd.h>
+#include "rtlibc.h"
+
+#define FILE_NAME "/test_rtt2.txt"
+#define DIR_NAME  "/rtt_dir2"
 
 int host_name_test(void)
 {
@@ -15,8 +20,7 @@ MSH_CMD_EXPORT(host_name_test, host_name);
 
 
 
-#define FILE_NAME "/test_rtt2.txt"
-#define DIR_NAME  "/rtt_dir2"
+//---------------------------------start--------------------
 
 static void create_file(char *file_name)
 {
@@ -55,70 +59,54 @@ static void create_dir(char *dir_name)
 }
 
 
-static int unlink_file(char *file_name)
+//---------------------------------end----------------------
+int real_path_test(void)
 {
-    int res = 0;
-    res = unlinkat(0, file_name, 0);
-    if (res == -1)
-    {
-        rt_kprintf("unlink err\n");
-        return -1;
-    }
+    char *symlinkpath = "/tmp/symlink/file";
+    char *actualpath;
 
-    rt_kprintf("unlink ok\n");
+
+    actualpath = realpath(symlinkpath, NULL);
+    if (actualpath != NULL)
+    {
+//    ... use actualpath ...
+    rt_kprintf("real path is %s \n",actualpath);
+
+        free(actualpath);
+    }
+    else
+    {
+        //  ... handle error ...
+    }
+    return 0;
+}
+MSH_CMD_EXPORT(real_path_test, real_path_test);
+
+int truncate_test(void)
+{
+    char *file = "test_tru.txt";
+    create_file(file);
+    rt_kprintf("start truncate\n");
+    truncate(file, 20); //int truncate(const char *path, off_t length)
     ls();
     return 0;
 }
-
-static int unlink_dir(char *dir_name)
-{
-    int res = 0;
-    res = unlinkat(0, dir_name, 0);
-    if (res == -1)
-    {
-        rt_kprintf("unlink err\n");
-        return -1;
-    }
-
-    rt_kprintf("unlink ok\n");
-    ls();
-    return 0;
-}
-
-/* unlinkat 可以删除文件（默认）或文件夹（需要设置flags为AT_REMOVEDIR）*/
-int unlinkat_test(void)
-{
-    create_file(FILE_NAME);
-    create_dir(DIR_NAME);
-
-    rt_kprintf("--------unlinkat test-------\n");
-    unlink_file(FILE_NAME);
-    //  unlink_dir(DIR_NAME);
-
-}
-MSH_CMD_EXPORT(unlinkat_test, unlinkat_test);
+MSH_CMD_EXPORT(truncate_test, truncate_test);
 
 
-
-int real_path_test()
-{
-
-}
-
-
-#include <unistd.h>
-
-
-char buf[1024];
-ssize_t len;
 int read_link_test(void)
 {
+    char buf[1024];
+    ssize_t len;
+
+
     if ((len = readlink("/modules/pass1", buf, sizeof(buf) - 1)) != -1)
     {
         buf[len] = '\0';
     }
+    return 0;
 }
-
+MSH_CMD_EXPORT(read_link_test, read_link_test);
 
 
 

@@ -157,9 +157,9 @@
         <Bp>
           <Number>0</Number>
           <Type>0</Type>
-          <LineNumber>60</LineNumber>
-          <EnabledFlag>1</EnabledFlag>
-          <Address>134316470</Address>
+          <LineNumber>16</LineNumber>
+          <EnabledFlag>0</EnabledFlag>
+          <Address>134267970</Address>
           <ByteObject>0</ByteObject>
           <HtxType>0</HtxType>
           <ManyObjects>0</ManyObjects>
@@ -168,28 +168,12 @@
           <BreakIfRCount>1</BreakIfRCount>
           <Filename>applications\dfs_test.c</Filename>
           <ExecCommand></ExecCommand>
-          <Expression>\\rt_thread\applications/dfs_test.c\60</Expression>
+          <Expression>\\rt_thread\applications/dfs_test.c\16</Expression>
         </Bp>
         <Bp>
           <Number>1</Number>
           <Type>0</Type>
-          <LineNumber>90</LineNumber>
-          <EnabledFlag>1</EnabledFlag>
-          <Address>134316614</Address>
-          <ByteObject>0</ByteObject>
-          <HtxType>0</HtxType>
-          <ManyObjects>0</ManyObjects>
-          <SizeOfObject>0</SizeOfObject>
-          <BreakByAccess>0</BreakByAccess>
-          <BreakIfRCount>1</BreakIfRCount>
-          <Filename>applications\dfs_test.c</Filename>
-          <ExecCommand></ExecCommand>
-          <Expression>\\rt_thread\applications/dfs_test.c\90</Expression>
-        </Bp>
-        <Bp>
-          <Number>2</Number>
-          <Type>0</Type>
-          <LineNumber>966</LineNumber>
+          <LineNumber>69</LineNumber>
           <EnabledFlag>1</EnabledFlag>
           <Address>0</Address>
           <ByteObject>0</ByteObject>
@@ -198,7 +182,23 @@
           <SizeOfObject>0</SizeOfObject>
           <BreakByAccess>0</BreakByAccess>
           <BreakIfRCount>0</BreakIfRCount>
-          <Filename>..\..\..\components\dfs\src\dfs_posix.c</Filename>
+          <Filename>applications\dfs_test.c</Filename>
+          <ExecCommand></ExecCommand>
+          <Expression></Expression>
+        </Bp>
+        <Bp>
+          <Number>2</Number>
+          <Type>0</Type>
+          <LineNumber>60</LineNumber>
+          <EnabledFlag>0</EnabledFlag>
+          <Address>0</Address>
+          <ByteObject>0</ByteObject>
+          <HtxType>0</HtxType>
+          <ManyObjects>0</ManyObjects>
+          <SizeOfObject>0</SizeOfObject>
+          <BreakByAccess>0</BreakByAccess>
+          <BreakIfRCount>0</BreakIfRCount>
+          <Filename>applications\dfs_test.c</Filename>
           <ExecCommand></ExecCommand>
           <Expression></Expression>
         </Bp>
