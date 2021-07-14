@@ -62,20 +62,20 @@ static void create_dir(char *dir_name)
 //---------------------------------end----------------------
 int real_path_test(void)
 {
-    char *symlinkpath = "/tmp/symlink/file";
+    char *symlinkpath = "file";//"/tmp/symlink/file";
     char *actualpath;
 
-
+    
     actualpath = realpath(symlinkpath, NULL);
     if (actualpath != NULL)
     {
-//    ... use actualpath ...
     rt_kprintf("real path is %s \n",actualpath);
 
         free(actualpath);
     }
     else
     {
+        rt_kprintf(" no real path\n");
         //  ... handle error ...
     }
     return 0;
@@ -110,4 +110,14 @@ MSH_CMD_EXPORT(read_link_test, read_link_test);
 
 
 
-
+int stat_test(void)
+{
+    struct stat *buf = RT_NULL;
+    char *file = "test10.txt";
+    create_file(file);
+    stat(file,buf);
+    rt_kprintf("st_atime %d\n",buf->st_atime);
+    rt_kprintf("st_mtime %d\n",buf->st_mtime);
+    rt_kprintf("st_ctime %d\n",buf->st_ctime);
+}
+MSH_CMD_EXPORT(stat_test,stat_test);

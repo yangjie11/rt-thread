@@ -9,9 +9,38 @@
 #include <rtlibc.h>
 
 /*修改文件存储时间(微秒级)*/
+/*
+The futimens() and utimensat() functions shall set the access and modification times of a file to the values of the times argument
+1>访问时间（access time 简写为atime）
+2>修改时间（modify time 简写为mtime）
+3>状态修改时间(change time 简写为ctime)
+*/
 int utimes(const char *path, const struct timeval times[2])
 {
-    //dfs_elm_stat
+
+    int result;
+
+    struct stat *buf;
+    struct stat *f_atime;
+    struct stat *f_ctime;
+    struct dfs_fd *d;
+
+//    /* set access time */
+//    times[0].tv_sec
+//    times[0].tv_usec
+
+//    /* set modification time*/
+//    times[1].tv_sec
+//    times[1].tv_usec
+
+
+//    d->fs->ops->
+
+    if (dfs_file_stat(path, buf) == 0)
+    {
+//        buf->st_mtime
+    }
+
 }
 
 /*返回参数dirp所指向的目录文件的文件描述符，该文件描述符的关闭应由函数closedir()执行*/
@@ -21,35 +50,60 @@ int dirfd(DIR *dirp)
 }
 
 /*因为内部使用了静态数据，所以readdir被认为不是线程安全的函数,因此才有了readdir_r函数的出现*/
+// readdir_r将返回结果填充到调用者提供的entry缓冲区中，保证了它的线程安全性
 int readdir_r(DIR *dirp, struct dirent *entry, struct dirent **result)
 {
-
+    entry = readdir(dirp);
+    if (entry == NULL)
+    {
+        result = NULL;
+    }
+    return 0;
 }
 
+//chmod函数在指定的文件上进行操作，而fchmod函数则对已打开的文件进行操作
+//两个函数返回值：若成功则返回0，若出错则返回-1
 /*改变文件的读写许可设置*/
-int chmod(const char * path, mode_t mode)
+
+
+int chmod(const char *path, mode_t mode)
 {
-    
+    int fd;
+    struct dfs_fd *d;
+    char *path_name = (char *)path;
+
+    fd = open(path_name, O_WRONLY);
+
+    d = fd_get(fd);
+    if (d != NULL)
+    {
+        d->flags |= mode;///
+    }
+    close(fd);
 
 }
 
 /*会依参数mode权限来更改参数fildes所指文件的权限*/
-int fchmod(int fildes,mode_t mode)
+int fchmod(int fildes, mode_t mode)
 {
     struct dfs_fd *d;
-    
+
     d = fd_get(fildes);
     if (d != NULL)
     {
-        d->flags = mode;
-    }   
+        d->flags |= mode;///
+    }
     return 0;
 }
 
-
+//lstat()与stat()作用完全相同，都是取得参数file_name所指的文件状态，其差别在于，当文件为符号连接时，lstat()会返回该link本身的状态。详细内容请参考stat()。
 /*获取一些文件相关的信息*/
+//执行成功则返回0，失败返回-1，错误代码存于errno
+
 int lstat(const char *path, struct stat *buf)
 {
+    
+    stat(path,buf); 
 
 }
 
@@ -68,7 +122,7 @@ int nanosleep(const struct timespec *rqtp, struct timespec *rmtp)
 {
 //    uint16_t time_ms = rqtp->tv_sec*1000+1;
 //    rt_thread_mdelay(time_ms);
-//    
+//
 //        if (rt_thread_self() != RT_NULL)
 //    {
 //        rt_thread_mdelay(usec / 1000u);

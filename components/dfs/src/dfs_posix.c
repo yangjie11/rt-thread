@@ -973,6 +973,11 @@ char *realpath(const char *path, char *resolved_path)
     struct stat stat;
     
     fd = open(path_name, O_WRONLY);
+    if(fd<0)
+    {
+        rt_kprintf("open path error\n");
+        return 0;
+    }
 
     d = fd_get(fd);
     if (d != NULL)
