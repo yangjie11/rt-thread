@@ -9,7 +9,7 @@
  */
 
 #include <rtthread.h>
-#include "pw_framework.h"
+//#include "pw_framework.h"
 
 extern void js_app_ready_sem_release(void);
 

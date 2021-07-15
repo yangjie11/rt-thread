@@ -140,7 +140,7 @@
         <SetRegEntry>
           <Number>0</Number>
           <Key>ST-LINKIII-KEIL_SWO</Key>
-          <Name>-U066EFF495056867767053013 -O8398 -SF4000 -C0 -A0 -I0 -HNlocalhost -HP7184 -P2 -N00("ARM CoreSight SW-DP") -D00(2BA01477) -L00(0) -TO18 -TC10000000 -TP21 -TDS8007 -TDT0 -TDC1F -TIEFFFFFFFF -TIP8 -FO15 -FD20000000 -FC1000 -FN1 -FF0STM32L4xx_512.FLM -FS08000000 -FL080000 -FP0($$Device:STM32L475VETx$CMSIS\Flash\STM32L4xx_512.FLM)</Name>
+          <Name>-U066DFF515255706587211750 -O8398 -SF4000 -C0 -A0 -I0 -HNlocalhost -HP7184 -P2 -N00("ARM CoreSight SW-DP") -D00(2BA01477) -L00(0) -TO18 -TC10000000 -TP21 -TDS8007 -TDT0 -TDC1F -TIEFFFFFFFF -TIP8 -FO31 -FD20000000 -FC1000 -FN1 -FF0STM32L4xx_512.FLM -FS08000000 -FL080000 -FP0($$Device:STM32L475VETx$CMSIS\Flash\STM32L4xx_512.FLM)</Name>
         </SetRegEntry>
         <SetRegEntry>
           <Number>0</Number>
@@ -157,25 +157,9 @@
         <Bp>
           <Number>0</Number>
           <Type>0</Type>
-          <LineNumber>117</LineNumber>
+          <LineNumber>775</LineNumber>
           <EnabledFlag>1</EnabledFlag>
-          <Address>134311626</Address>
-          <ByteObject>0</ByteObject>
-          <HtxType>0</HtxType>
-          <ManyObjects>0</ManyObjects>
-          <SizeOfObject>0</SizeOfObject>
-          <BreakByAccess>0</BreakByAccess>
-          <BreakIfRCount>1</BreakIfRCount>
-          <Filename>applications\dfs_test.c</Filename>
-          <ExecCommand></ExecCommand>
-          <Expression>\\rt_thread\applications/dfs_test.c\117</Expression>
-        </Bp>
-        <Bp>
-          <Number>1</Number>
-          <Type>0</Type>
-          <LineNumber>803</LineNumber>
-          <EnabledFlag>1</EnabledFlag>
-          <Address>134249708</Address>
+          <Address>134249742</Address>
           <ByteObject>0</ByteObject>
           <HtxType>0</HtxType>
           <ManyObjects>0</ManyObjects>
@@ -184,14 +168,62 @@
           <BreakIfRCount>1</BreakIfRCount>
           <Filename>..\..\..\components\dfs\filesystems\elmfat\dfs_elm.c</Filename>
           <ExecCommand></ExecCommand>
-          <Expression>\\rt_thread\../../../components/dfs/filesystems/elmfat/dfs_elm.c\803</Expression>
+          <Expression>\\rt_thread\../../../components/dfs/filesystems/elmfat/dfs_elm.c\775</Expression>
+        </Bp>
+        <Bp>
+          <Number>1</Number>
+          <Type>0</Type>
+          <LineNumber>253</LineNumber>
+          <EnabledFlag>0</EnabledFlag>
+          <Address>134263680</Address>
+          <ByteObject>0</ByteObject>
+          <HtxType>0</HtxType>
+          <ManyObjects>0</ManyObjects>
+          <SizeOfObject>0</SizeOfObject>
+          <BreakByAccess>0</BreakByAccess>
+          <BreakIfRCount>1</BreakIfRCount>
+          <Filename>applications\dfs_test.c</Filename>
+          <ExecCommand></ExecCommand>
+          <Expression>\\rt_thread\applications/dfs_test.c\253</Expression>
         </Bp>
         <Bp>
           <Number>2</Number>
           <Type>0</Type>
+          <LineNumber>252</LineNumber>
+          <EnabledFlag>0</EnabledFlag>
+          <Address>134263670</Address>
+          <ByteObject>0</ByteObject>
+          <HtxType>0</HtxType>
+          <ManyObjects>0</ManyObjects>
+          <SizeOfObject>0</SizeOfObject>
+          <BreakByAccess>0</BreakByAccess>
+          <BreakIfRCount>1</BreakIfRCount>
+          <Filename>applications\dfs_test.c</Filename>
+          <ExecCommand></ExecCommand>
+          <Expression>\\rt_thread\applications/dfs_test.c\252</Expression>
+        </Bp>
+        <Bp>
+          <Number>3</Number>
+          <Type>0</Type>
+          <LineNumber>66</LineNumber>
+          <EnabledFlag>0</EnabledFlag>
+          <Address>134281464</Address>
+          <ByteObject>0</ByteObject>
+          <HtxType>0</HtxType>
+          <ManyObjects>0</ManyObjects>
+          <SizeOfObject>0</SizeOfObject>
+          <BreakByAccess>0</BreakByAccess>
+          <BreakIfRCount>1</BreakIfRCount>
+          <Filename>applications\dfs_test.c</Filename>
+          <ExecCommand></ExecCommand>
+          <Expression>\\rt_thread\applications/dfs_test.c\66</Expression>
+        </Bp>
+        <Bp>
+          <Number>4</Number>
+          <Type>0</Type>
           <LineNumber>16</LineNumber>
           <EnabledFlag>0</EnabledFlag>
-          <Address>134267970</Address>
+          <Address>134268602</Address>
           <ByteObject>0</ByteObject>
           <HtxType>0</HtxType>
           <ManyObjects>0</ManyObjects>
@@ -203,26 +235,90 @@
           <Expression>\\rt_thread\applications/dfs_test.c\16</Expression>
         </Bp>
         <Bp>
-          <Number>3</Number>
+          <Number>5</Number>
           <Type>0</Type>
-          <LineNumber>69</LineNumber>
-          <EnabledFlag>1</EnabledFlag>
-          <Address>134280808</Address>
+          <LineNumber>642</LineNumber>
+          <EnabledFlag>0</EnabledFlag>
+          <Address>134276626</Address>
           <ByteObject>0</ByteObject>
           <HtxType>0</HtxType>
           <ManyObjects>0</ManyObjects>
           <SizeOfObject>0</SizeOfObject>
           <BreakByAccess>0</BreakByAccess>
           <BreakIfRCount>1</BreakIfRCount>
-          <Filename>applications\dfs_test.c</Filename>
+          <Filename>..\..\..\components\dfs\src\dfs_posix.c</Filename>
           <ExecCommand></ExecCommand>
-          <Expression>\\rt_thread\applications/dfs_test.c\69</Expression>
+          <Expression>\\rt_thread\../../../components/dfs/src/dfs_posix.c\642</Expression>
         </Bp>
         <Bp>
-          <Number>4</Number>
+          <Number>6</Number>
           <Type>0</Type>
-          <LineNumber>60</LineNumber>
+          <LineNumber>560</LineNumber>
           <EnabledFlag>0</EnabledFlag>
+          <Address>134273696</Address>
+          <ByteObject>0</ByteObject>
+          <HtxType>0</HtxType>
+          <ManyObjects>0</ManyObjects>
+          <SizeOfObject>0</SizeOfObject>
+          <BreakByAccess>0</BreakByAccess>
+          <BreakIfRCount>1</BreakIfRCount>
+          <Filename>..\..\..\components\dfs\src\dfs_posix.c</Filename>
+          <ExecCommand></ExecCommand>
+          <Expression>\\rt_thread\../../../components/dfs/src/dfs_posix.c\560</Expression>
+        </Bp>
+        <Bp>
+          <Number>7</Number>
+          <Type>0</Type>
+          <LineNumber>1006</LineNumber>
+          <EnabledFlag>0</EnabledFlag>
+          <Address>134263928</Address>
+          <ByteObject>0</ByteObject>
+          <HtxType>0</HtxType>
+          <ManyObjects>0</ManyObjects>
+          <SizeOfObject>0</SizeOfObject>
+          <BreakByAccess>0</BreakByAccess>
+          <BreakIfRCount>1</BreakIfRCount>
+          <Filename>..\..\..\components\dfs\src\dfs_posix.c</Filename>
+          <ExecCommand></ExecCommand>
+          <Expression>\\rt_thread\../../../components/dfs/src/dfs_posix.c\1006</Expression>
+        </Bp>
+        <Bp>
+          <Number>8</Number>
+          <Type>0</Type>
+          <LineNumber>806</LineNumber>
+          <EnabledFlag>1</EnabledFlag>
+          <Address>134249836</Address>
+          <ByteObject>0</ByteObject>
+          <HtxType>0</HtxType>
+          <ManyObjects>0</ManyObjects>
+          <SizeOfObject>0</SizeOfObject>
+          <BreakByAccess>0</BreakByAccess>
+          <BreakIfRCount>1</BreakIfRCount>
+          <Filename>..\..\..\components\dfs\filesystems\elmfat\dfs_elm.c</Filename>
+          <ExecCommand></ExecCommand>
+          <Expression>\\rt_thread\../../../components/dfs/filesystems/elmfat/dfs_elm.c\806</Expression>
+        </Bp>
+        <Bp>
+          <Number>9</Number>
+          <Type>0</Type>
+          <LineNumber>170</LineNumber>
+          <EnabledFlag>1</EnabledFlag>
+          <Address>0</Address>
+          <ByteObject>0</ByteObject>
+          <HtxType>0</HtxType>
+          <ManyObjects>0</ManyObjects>
+          <SizeOfObject>0</SizeOfObject>
+          <BreakByAccess>0</BreakByAccess>
+          <BreakIfRCount>0</BreakIfRCount>
+          <Filename>applications\dfs_test.c</Filename>
+          <ExecCommand></ExecCommand>
+          <Expression></Expression>
+        </Bp>
+        <Bp>
+          <Number>10</Number>
+          <Type>0</Type>
+          <LineNumber>173</LineNumber>
+          <EnabledFlag>1</EnabledFlag>
           <Address>0</Address>
           <ByteObject>0</ByteObject>
           <HtxType>0</HtxType>
@@ -245,6 +341,11 @@
           <count>1</count>
           <WinNumber>1</WinNumber>
           <ItemText>name</ItemText>
+        </Ww>
+        <Ww>
+          <count>2</count>
+          <WinNumber>1</WinNumber>
+          <ItemText>actualpath2</ItemText>
         </Ww>
       </WatchWindow1>
       <Tracepoint>
@@ -271,7 +372,7 @@
         <aPa1>0</aPa1>
         <AscS4>0</AscS4>
         <aSer4>0</aSer4>
-        <StkLoc>0</StkLoc>
+        <StkLoc>1</StkLoc>
         <TrcWin>0</TrcWin>
         <newCpu>0</newCpu>
         <uProt>0</uProt>

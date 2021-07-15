@@ -117,3 +117,26 @@ gid_t getegid(void)
     return 0; /*ROOT*/
 }
 RTM_EXPORT(getegid);
+long sysconf(int name)
+{
+  int errcode;
+
+  /* NOTE:  The initialize implementation of this interface is very sparse.
+   * It was originally created to support only the functionality of
+   * getdtablesize() but can be extended to support as much of the standard
+   * POSIX sysconf() as is necessary.
+   */
+
+  switch (name)
+    {
+      case _SC_CLK_TCK:
+          return RT_TICK_PER_SECOND;
+      
+      case _SC_HOST_NAME_MAX:
+          return sizeof("RT-Thread");
+      
+      default:
+          rt_set_errno(-EINVAL);
+          return -1;
+    }
+}

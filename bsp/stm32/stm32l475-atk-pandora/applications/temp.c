@@ -17,82 +17,74 @@ The futimens() and utimensat() functions shall set the access and modification t
 */
 int utimes(const char *path, const struct timeval times[2])
 {
-
-    int result;
-
-    struct stat *buf;
-    struct stat *f_atime;
-    struct stat *f_ctime;
-    struct dfs_fd *d;
-
-//    /* set access time */
-//    times[0].tv_sec
-//    times[0].tv_usec
-
-//    /* set modification time*/
-//    times[1].tv_sec
-//    times[1].tv_usec
-
-
-//    d->fs->ops->
-
-    if (dfs_file_stat(path, buf) == 0)
-    {
-//        buf->st_mtime
-    }
-
+    return 0;
 }
 
 /*返回参数dirp所指向的目录文件的文件描述符，该文件描述符的关闭应由函数closedir()执行*/
 int dirfd(DIR *dirp)
 {
-
+    if (dirp != NULL)
+    {
+        return dirp->fd;
+    }
+    rt_set_errno(-EBADF);
+    return -1;
 }
 
 /*因为内部使用了静态数据，所以readdir被认为不是线程安全的函数,因此才有了readdir_r函数的出现*/
 // readdir_r将返回结果填充到调用者提供的entry缓冲区中，保证了它的线程安全性
 int readdir_r(DIR *dirp, struct dirent *entry, struct dirent **result)
 {
-    entry = readdir(dirp);
-    if (entry == NULL)
+    int res;
+    struct dfs_fd *fd;
+
+    fd = fd_get(dirp->fd);
+    if (fd == NULL)
     {
-        result = NULL;
+        rt_set_errno(-EBADF);
+        return NULL;
     }
+
+    if (dirp->num)
+    {
+        struct dirent *dirent_ptr;
+        dirent_ptr = (struct dirent *)&dirp->buf[dirp->cur];
+        dirp->cur += dirent_ptr->d_reclen;
+    }
+
+    if (!dirp->num || dirp->cur >= dirp->num)
+    {
+        /* get a new entry */
+        res = dfs_file_getdents(fd,
+                                (struct dirent *)dirp->buf,
+                                sizeof(dirp->buf) - 1);
+        if (res <= 0)
+        {
+            fd_put(fd);
+            rt_set_errno(res);
+
+            return NULL;
+        }
+
+        dirp->num = res;
+        dirp->cur = 0; /* current entry index */
+    }
+
+    fd_put(fd);
+
+    entry = (struct dirent *)(dirp->buf + dirp->cur);
+    *result = entry;
+    
     return 0;
 }
 
-//chmod函数在指定的文件上进行操作，而fchmod函数则对已打开的文件进行操作
-//两个函数返回值：若成功则返回0，若出错则返回-1
-/*改变文件的读写许可设置*/
-
-
 int chmod(const char *path, mode_t mode)
 {
-    int fd;
-    struct dfs_fd *d;
-    char *path_name = (char *)path;
-
-    fd = open(path_name, O_WRONLY);
-
-    d = fd_get(fd);
-    if (d != NULL)
-    {
-        d->flags |= mode;///
-    }
-    close(fd);
-
+    return 0;
 }
 
-/*会依参数mode权限来更改参数fildes所指文件的权限*/
 int fchmod(int fildes, mode_t mode)
 {
-    struct dfs_fd *d;
-
-    d = fd_get(fildes);
-    if (d != NULL)
-    {
-        d->flags |= mode;///
-    }
     return 0;
 }
 
@@ -102,9 +94,11 @@ int fchmod(int fildes, mode_t mode)
 
 int lstat(const char *path, struct stat *buf)
 {
-    
-    stat(path,buf); 
+//The lstat() function shall be equivalent to stat(),
+//except when path refers to a symbolic link
 
+    stat(path, buf);
+    return 0;
 }
 
 /*
@@ -120,21 +114,26 @@ nanosleep可以很好的保留中断时剩余时间,是比sleep()函数更高精
 */
 int nanosleep(const struct timespec *rqtp, struct timespec *rmtp)
 {
-//    uint16_t time_ms = rqtp->tv_sec*1000+1;
-//    rt_thread_mdelay(time_ms);
-//
-//        if (rt_thread_self() != RT_NULL)
-//    {
-//        rt_thread_mdelay(usec / 1000u);
-//    }
-//    else  /* scheduler has not run yet */
-//    {
-//        rt_hw_us_delay(usec / 1000u);
-//    }
-//    rt_hw_us_delay(usec % 1000u);
+    uint16_t time_ms = rqtp->tv_sec * 1000;
+    uint16_t time_us = rqtp->tv_nsec / 1000;
+    uint16_t i = 0;
 
-//    return 0;
+    rt_thread_mdelay(time_ms);
 
+    if (rt_thread_self() != RT_NULL)
+    {
+        rt_thread_mdelay(time_ms);
+    }
+    else  /* scheduler has not run yet */
+    {
+        for (i = 0; i < time_ms - 1; i++)
+        {
+            rt_hw_us_delay(1000u);
+        }
+    }
+    rt_hw_us_delay(time_us);
+
+    return 0;
 }
 
 

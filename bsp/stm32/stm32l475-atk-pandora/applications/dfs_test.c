@@ -34,7 +34,7 @@ static void create_file(char *file_name)
     {
         write(fd, s, sizeof(s));
         close(fd);
-        rt_kprintf("file %s done.\n", file_name);
+        rt_kprintf("file %s done.fd is %d\n", file_name, fd);
     }
     ls();
 
@@ -60,34 +60,70 @@ static void create_dir(char *dir_name)
 
 
 //---------------------------------end----------------------
-int real_path_test(void)
+void real_path_test(void *para)
 {
-    char *symlinkpath = "file";//"/tmp/symlink/file";
-    char *actualpath;
+    char *symlinkpath = "./file";//"../tmp/symlink/file";//
+    char *actualpath = rt_malloc(64);
+    char *actualpath2 = rt_malloc(64);
 
-    
     actualpath = realpath(symlinkpath, NULL);
     if (actualpath != NULL)
     {
-    rt_kprintf("real path is %s \n",actualpath);
+        rt_kprintf("real path is %s \n", actualpath);
 
         free(actualpath);
     }
     else
     {
         rt_kprintf(" no real path\n");
-        //  ... handle error ...
     }
-    return 0;
-}
-MSH_CMD_EXPORT(real_path_test, real_path_test);
 
-int truncate_test(void)
+
+    realpath(symlinkpath, actualpath2);
+    if (actualpath2 != NULL)
+    {
+        rt_kprintf("real path2 is %s \n", actualpath2);
+
+        free(actualpath2);
+    }
+    else
+    {
+        rt_kprintf(" no real path\n");
+    }
+}
+
+int thread(void)
 {
-    char *file = "test_tru.txt";
+    rt_thread_t tid1 = RT_NULL;
+    /* 创建线程 1，名称是 thread1，入口是 thread1_entry*/
+    tid1 = rt_thread_create("thread1",
+                            real_path_test, RT_NULL,
+                            1024,
+                            15, 10);
+
+    /* 如果获得线程控制块，启动这个线程 */
+    if (tid1 != RT_NULL)
+        rt_thread_startup(tid1);
+}
+MSH_CMD_EXPORT(thread, real_path_test);
+
+int truncate_test(int argc, char *argv[])
+{
+    char file[RT_NAME_MAX];
+    rt_uint16_t len = 15;
+
+    if (argc == 2)
+    {
+        rt_strncpy(file, argv[1], RT_NAME_MAX);
+    }
+    else
+    {
+        rt_kprintf("truncate_test <FILE> \n");
+        return 0;
+    }
     create_file(file);
     rt_kprintf("start truncate\n");
-    truncate(file, 20); //int truncate(const char *path, off_t length)
+    truncate(file, len); //int truncate(const char *path, off_t length)
     ls();
     return 0;
 }
@@ -104,20 +140,124 @@ int read_link_test(void)
     {
         buf[len] = '\0';
     }
+
     return 0;
 }
 MSH_CMD_EXPORT(read_link_test, read_link_test);
 
 
 
-int stat_test(void)
+int timestat_test(int argc, char *argv[])
 {
     struct stat *buf = RT_NULL;
-    char *file = "test10.txt";
-    create_file(file);
-    stat(file,buf);
-    rt_kprintf("st_atime %d\n",buf->st_atime);
-    rt_kprintf("st_mtime %d\n",buf->st_mtime);
-    rt_kprintf("st_ctime %d\n",buf->st_ctime);
+    char file[RT_NAME_MAX];
+    int fd;
+    char s[] = "hello";
+
+    if (argc == 2)
+    {
+        rt_strncpy(file, argv[1], RT_NAME_MAX);
+    }
+    else
+    {
+        rt_kprintf("stat_test <NEW FILE>\n");
+        return 0;
+    }
+
+    fd = open(file, O_WRONLY | O_CREAT);
+    if (fd >= 0)
+    {
+        write(fd, s, sizeof(s));
+        rt_kprintf("file %s done.fd is %d\n", file, fd);
+    }
+    stat(file, buf);
+    rt_kprintf("st_atime %d\n", buf->st_atime);
+    rt_kprintf("st_mtime %d\n", buf->st_mtime);
+    rt_kprintf("st_ctime %d\n", buf->st_ctime);
 }
-MSH_CMD_EXPORT(stat_test,stat_test);
+MSH_CMD_EXPORT(timestat_test, stat_test);
+
+
+int get_time_test(int argc, char *argv[])
+{
+    struct stat *buf = RT_NULL;
+    char dir[RT_NAME_MAX];
+
+    if (argc == 2)
+    {
+        rt_strncpy(dir, argv[1], RT_NAME_MAX);
+    }
+    else
+    {
+        rt_kprintf("get_time_test <file or dir>\n");
+        return 0;
+    }
+
+    stat(dir, buf);
+    rt_kprintf("st_atime %d\n", buf->st_atime);
+    rt_kprintf("st_mtime %d\n", buf->st_mtime);
+    rt_kprintf("st_ctime %d\n", buf->st_ctime);
+
+}
+MSH_CMD_EXPORT(get_time_test, u_time test);
+
+extern int dirfd(DIR *dirp);
+int dirfd_test(int argc, char *argv[])
+{
+    DIR *dp;
+    int fd;
+    char dir[RT_NAME_MAX];
+
+    if (argc == 2)
+    {
+        rt_strncpy(dir, argv[1], RT_NAME_MAX);
+    }
+    else
+    {
+        rt_kprintf("dirfd_test <NEW DIR>\n");
+        return 0;
+    }
+
+    create_dir(dir);
+    rt_kprintf("test start\n");
+
+    dp = opendir(dir);
+
+    fd = dirfd(dp);
+    rt_kprintf("fd is %d\n", fd);
+
+
+}
+MSH_CMD_EXPORT(dirfd_test, dirfd_test);
+
+
+int fd_open_test(int argc, char *argv[])
+{
+
+    FILE *dp;
+    int fd;
+    char file[RT_NAME_MAX];
+    char s[] = "RT-Thread Programmer!";
+
+    if (argc == 2)
+    {
+        rt_strncpy(file, argv[1], RT_NAME_MAX);
+    }
+    else
+    {
+        rt_kprintf("fd_open_test <NEW file>\n");
+        return 0;
+    }
+
+    fd = open(file, O_WRONLY | O_CREAT);
+    if (fd >= 0)
+    {
+        write(fd, s, sizeof(s));
+        rt_kprintf("file %s done.fd is %d\n", file, fd);
+    }
+
+    dp = fdopen(fd, O_RDONLY);
+    close(fd);
+
+}
+MSH_CMD_EXPORT(fd_open_test, fd_open_test);

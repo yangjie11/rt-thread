@@ -952,54 +952,39 @@ char *getcwd(char *buf, size_t size)
 }
 RTM_EXPORT(getcwd);
 
+
+
+
+//////CHECK  rt_set_errno
 /*
-Upon successful completion, realpath() shall return a pointer to the buffer containing the resolved name. 
+Upon successful completion, realpath() shall return a pointer to the buffer containing the resolved name.
 Otherwise, realpath() shall return a null pointer and set errno to indicate the error.
 
 If the resolved_name argument is a null pointer, the pointer returned by realpath() can be passed to free().
 
-If the resolved_name argument is not a null pointer and the realpath() function fails, 
+If the resolved_name argument is not a null pointer and the realpath() function fails,
 the contents of the buffer pointed to by resolved_name are undefined.
 */
 char *realpath(const char *path, char *resolved_path)
 {
     int fd;
-    int length;
-    struct dfs_fd *d;
     char *path_name = (char *)path;
+    char *fullpath;
 
-    char *fullpath = NULL;
-    struct dirent dirent;
-    struct stat stat;
-    
-    fd = open(path_name, O_WRONLY);
-    if(fd<0)
+    fd = open(path_name, O_RDONLY);
+    if (fd < 0)
     {
-        rt_kprintf("open path error\n");
+        rt_set_errno(-EIO);
         return 0;
     }
+    close(fd);
 
-    d = fd_get(fd);
-    if (d != NULL)
+    if (resolved_path != NULL)
     {
-        memset(&dirent, 0, sizeof(struct dirent));
-        length = dfs_file_getdents(d, &dirent, sizeof(struct dirent));
-        if (length > 0)
-        {
-            memset(&stat, 0, sizeof(struct stat));
-
-            fullpath = dfs_normalize_path(path, dirent.d_name);
-            if (fullpath == NULL)
-            {
-                return NULL;
-            }
-
-            strcpy(resolved_path, fullpath);
-
-        }
-        close(fd);
-        return 0;
+        fullpath = resolved_path;
     }
+
+    fullpath = dfs_normalize_path(NULL, path_name);
     return fullpath;
 }
 
@@ -1007,9 +992,7 @@ char *realpath(const char *path, char *resolved_path)
 FILE *fdopen(int fildes, const char *mode)
 {
     FILE *fp;
-    int result;
     struct dfs_fd *d;
-    char *path_name;
 
     d = fd_get(fildes);
     if (d == NULL)
@@ -1017,45 +1000,41 @@ FILE *fdopen(int fildes, const char *mode)
         rt_set_errno(-EBADF);
         return NULL;
     }
+    fp = fopen(d->path, mode);
     
-    
-//    fp->__FILE_opaque = 
-
-  //  for(i=,i>0,i--)
-        
-    
-    
-////    path_name = readlink();
-//    
-//    
-//    
-//    fp = fopen(path_name, mode);
-//    if (fp == NULL) 
-//    {
-//        return NULL;
-//    }
-//    fclose(fp);
-
     return fp;
 }
 
 int gethostname(char *name, size_t len)
 {
-    if (len < sizeof("RT-Thread"))
+    if (name == NULL)
     {
-        strcpy(name, "err");
         return -1;
     }
-    strcpy(name, "RT-Thread");
+
+    rt_strncpy(name, "RT-Thread", len);
     return 0;
 }
 
 
 //readlink("/modules/pass1", buf, sizeof(buf) - 1))
+//获取当前路径
 //执行成功则传符号连接所指的文件路径字符串，失败则返回-1，错误代码存于errno。
+//readlink()会将参数path的 符号链接内容存储到参数buf所指的内存空间，返回的内容不是以\000作字符串结尾，
+//但会将字符串的字符数返回，这使得添加\000变得简单。若参数bufsiz小于符号连接的内容长度，过长的内容会被截断，
+//如果 readlink 第一个参数指向一个文件而不是 符号链接时，readlink 设 置errno 为 EINVAL 并返回 -1。 
+//readlink()函数组合了open()、read()和close()的所有操作。
 ssize_t readlink(const char *restrict path, char *restrict buf, size_t bufsize)
 {
-    return 0;
+    struct stat s_buf;
+    
+    stat(path,&s_buf);
+ 
+    if(S_ISREG(s_buf.st_mode)||(S_ISDIR(s_buf.st_mode)))
+    {
+        rt_set_errno(-EINVAL);
+        return -1;
+    }
 }
 
 
@@ -1084,44 +1063,3 @@ int truncate(const char *path, off_t length)
     return 0;
 }
 
-
-/*
-The unlinkat() function shall be equivalent to the unlink() or rmdir() function except
-in the case where path specifies a relative path.
-
-In this case the directory entry to be removed is determined relative to the directory
-associated with the file descriptor fd instead of the current working directory.
-
-If the access mode of the open file description associated with the file descriptor is not O_SEARCH,
-the function shall check whether directory searches are permitted using the current permissions of the directory underlying the file descriptor.
-If the access mode is O_SEARCH, the function shall not perform the check.
-*/
-int unlinkat(int fd, const char *pathname, int flag)
-{
-    int result;
-    if (flag == 0)
-    {
-        /* delete files */
-        result = dfs_file_unlink(pathname);
-        if (result < 0)
-        {
-            rt_set_errno(result);
-            return -1;
-        }
-    }
-    else
-    {
-        return -1;
-    }
-
-    return 0;
-}
-
-
-long sysconf(int name)
-{
-    return 0;
-
-}
-
-/* @} */
