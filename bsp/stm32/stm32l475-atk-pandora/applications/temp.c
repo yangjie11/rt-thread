@@ -74,7 +74,7 @@ int readdir_r(DIR *dirp, struct dirent *entry, struct dirent **result)
 
     entry = (struct dirent *)(dirp->buf + dirp->cur);
     *result = entry;
-    
+
     return 0;
 }
 
@@ -135,6 +135,176 @@ int nanosleep(const struct timespec *rqtp, struct timespec *rmtp)
 
     return 0;
 }
+
+
+
+int nice(int inc)
+{
+    return 0;
+}
+int msync(void *addr, size_t len, int flags)
+{
+    return 0;
+}
+int mlock(const void *addr, size_t len)
+{
+    return 0;
+}
+int munlock(const void *addr, size_t len)
+{
+    return 0;
+}
+int mprotect(void *addr, size_t len, int prot)
+{
+    return 0;
+}
+
+//注意已有
+void *mmap(void *addr, size_t len, int prot, int flags, int fildes, off_t off)
+{
+
+}
+//注意已有
+int munmap(void *addr, size_t len)
+{
+
+}
+
+//根据路径获取最后的文件名
+//https://pubs.opengroup.org/onlinepubs/9699919799/functions/basename.html#tag_16_32
+/*
+ * The basename() function shall take the pathname pointed to by path
+ * and return a pointer to the final component of the pathname, deleting any trailing '/' characters
+ *
+ * @param path: the pathname pointed to by path
+ *
+ * @return: a pointer to the final component of the pathname, deleting any trailing '/' characters
+ */
+char *basename(char *path)
+{
+    if (path == NULL)
+    {
+        return ".";
+    }
+
+
+}
+
+//https://pubs.opengroup.org/onlinepubs/9699919799/functions/dirname.html#tag_16_91
+/*
+ *
+ *
+ * @return: a pointer to a string that is a pathname
+ *          of the parent directory of that file
+ */
+char *dirname(char *path)
+{
+    //判断path有效
+
+    
+
+}
+
+
+
+
+
+#define ST_RDONLY             0x0001 /* Mount read-only.  */
+#define ST_NOSUID             0x0002 /* Ignore suid and sgid bits.  */
+
+typedef uint32_t     fsblkcnt_t;
+typedef uint32_t     fsfilcnt_t;
+
+struct statvfs
+{
+  unsigned long f_bsize;   /* File system block size */
+  unsigned long f_frsize;  /* Fundamental file system block size */
+  fsblkcnt_t    f_blocks;  /* Total number of blocks on file system in
+                            * units of f_frsize */
+  fsblkcnt_t    f_bfree;   /* Total number of free blocks */
+  fsblkcnt_t    f_bavail;  /* Number of free blocks available to
+                            * non-privileged process */
+  fsfilcnt_t    f_files;   /* Total number of file serial numbers */
+  fsfilcnt_t    f_ffree;   /* Total number of free file serial numbers */
+  fsfilcnt_t    f_favail;  /* Number of file serial numbers available to
+                            * non-privileged process */
+  unsigned long f_fsid;    /* File system ID */
+  unsigned long f_flag;    /* Bit mask of f_flag values */
+  unsigned long f_namemax; /* Maximum filename length */
+};
+
+
+//The statvfs() function shall obtain information about the file system containing the file named by path.
+//the buf argument is a pointer to a statvfs structure that shall be filled. Read, write, or execute permission of the named file is not required.
+//
+int statvfs(const char *restrict path, struct statvfs *restrict buf)
+{
+    stat(path,);
+    buf->f_flag = ST_RDONLY;//or ST_NOSUID
+
+}
+
+
+/*
+ * (1) 参数：readv和writev的第一个参数fd是个文件描述符，第二个参数是指向iovec数据结构的一个指针，其中iov_base为缓冲区首地址，iov_len为缓冲区长度，参数iovcnt指定了iovec的个数。
+ * (2) 返回值：函数调用成功时返回读、写的总字节数，失败时返回-1并设置相应的errno。
+ */
+
+struct iovec
+{
+  FAR void *iov_base;  /* Base address of I/O memory region */
+  size_t    iov_len;   /* Size of the memory pointed to by iov_base */
+};
+
+ssize_t readv(int fd, const struct iovec *iov, int iovcnt)
+{
+    int i = 0;
+    size_t r_len = 0;
+
+    for (i = 0; i < iovcnt; i++)
+    {
+        r_len = iov[i].iov_len;
+        if (read(fd, iov[i].iov_base, r_len) >= 0)
+        {
+            return r_len;
+        }
+        else
+        {
+            rt_set_errno();
+            return -1;
+        }
+    }
+
+}
+ssize_t writev(int fd, const struct iovec *iov, int iovcnt)
+{
+    int i = 0;
+    size_t w_len = 0;
+
+    for (i = 0; i < iovcnt; i++)
+    {
+        w_len = iov[i].iov_len;
+        if (write(fd, iov[i].iov_base, w_len) >= 0)
+        {
+            return w_len;
+        }
+        else
+        {
+            rt_set_errno();
+            return -1;
+        }
+
+    }
+}
+
+
+
+
+
+
+
+
+
 
 
 
