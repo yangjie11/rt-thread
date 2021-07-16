@@ -162,12 +162,12 @@ int mprotect(void *addr, size_t len, int prot)
 //注意已有
 void *mmap(void *addr, size_t len, int prot, int flags, int fildes, off_t off)
 {
-
+    return 0;
 }
 //注意已有
 int munmap(void *addr, size_t len)
 {
-
+    return 0;
 }
 
 //根据路径获取最后的文件名
@@ -182,12 +182,25 @@ int munmap(void *addr, size_t len)
  */
 char *basename(char *path)
 {
+    char *dst, *src;
+    src = path;
+    dst = path;
+
+    char c = *src;
+
     if (path == NULL)
     {
         return ".";
     }
 
-
+    while ((c = *src++) != '\0')
+    {
+        if (c == '/')
+        {
+            dst = src;
+        }
+    }
+    return dst;
 }
 
 //https://pubs.opengroup.org/onlinepubs/9699919799/functions/dirname.html#tag_16_91
@@ -199,10 +212,41 @@ char *basename(char *path)
  */
 char *dirname(char *path)
 {
-    //判断path有效
+    char *dst, *src, *dst0;
+    src = path;
+    dst0 = path;
 
-    
+    long len = 0;
 
+    char c = *src;
+
+    if (path == NULL)
+    {
+        return ".";
+    }
+
+    while ((c = *src++) != '\0')
+    {
+        len++;
+        if (c == '/')
+        {
+            dst0 = src;
+        }
+    }
+
+    while ((*dst0++) != '\0')
+    {
+        len--;
+    }
+    len--;
+
+
+    dst0 = rt_malloc(256);
+    rt_strncpy(dst0, path, len);
+    dst0[len] = '\0';
+    dst = dst0;
+    rt_free(dst0);
+    return dst;
 }
 
 
@@ -217,20 +261,20 @@ typedef uint32_t     fsfilcnt_t;
 
 struct statvfs
 {
-  unsigned long f_bsize;   /* File system block size */
-  unsigned long f_frsize;  /* Fundamental file system block size */
-  fsblkcnt_t    f_blocks;  /* Total number of blocks on file system in
+    unsigned long f_bsize;   /* File system block size */
+    unsigned long f_frsize;  /* Fundamental file system block size */
+    fsblkcnt_t    f_blocks;  /* Total number of blocks on file system in
                             * units of f_frsize */
-  fsblkcnt_t    f_bfree;   /* Total number of free blocks */
-  fsblkcnt_t    f_bavail;  /* Number of free blocks available to
+    fsblkcnt_t    f_bfree;   /* Total number of free blocks */
+    fsblkcnt_t    f_bavail;  /* Number of free blocks available to
                             * non-privileged process */
-  fsfilcnt_t    f_files;   /* Total number of file serial numbers */
-  fsfilcnt_t    f_ffree;   /* Total number of free file serial numbers */
-  fsfilcnt_t    f_favail;  /* Number of file serial numbers available to
+    fsfilcnt_t    f_files;   /* Total number of file serial numbers */
+    fsfilcnt_t    f_ffree;   /* Total number of free file serial numbers */
+    fsfilcnt_t    f_favail;  /* Number of file serial numbers available to
                             * non-privileged process */
-  unsigned long f_fsid;    /* File system ID */
-  unsigned long f_flag;    /* Bit mask of f_flag values */
-  unsigned long f_namemax; /* Maximum filename length */
+    unsigned long f_fsid;    /* File system ID */
+    unsigned long f_flag;    /* Bit mask of f_flag values */
+    unsigned long f_namemax; /* Maximum filename length */
 };
 
 
@@ -239,8 +283,23 @@ struct statvfs
 //
 int statvfs(const char *restrict path, struct statvfs *restrict buf)
 {
-    stat(path,);
+    int result;
+    struct statfs buffer;
+    result = dfs_statfs(path, &buffer);
+    if (result < 0)
+    {
+        rt_set_errno(result);
+
+        return -1;
+    }
+
+    buf->f_bsize = buffer.f_bsize;
+    buf->f_blocks = buffer.f_blocks;
+    buf->f_bfree = buffer.f_bfree;
+
+
     buf->f_flag = ST_RDONLY;//or ST_NOSUID
+    return 0;
 
 }
 
@@ -252,8 +311,8 @@ int statvfs(const char *restrict path, struct statvfs *restrict buf)
 
 struct iovec
 {
-  FAR void *iov_base;  /* Base address of I/O memory region */
-  size_t    iov_len;   /* Size of the memory pointed to by iov_base */
+    void *iov_base;  /* Base address of I/O memory region */
+    size_t    iov_len;   /* Size of the memory pointed to by iov_base */
 };
 
 ssize_t readv(int fd, const struct iovec *iov, int iovcnt)
@@ -270,11 +329,11 @@ ssize_t readv(int fd, const struct iovec *iov, int iovcnt)
         }
         else
         {
-            rt_set_errno();
+            rt_set_errno(-EIO);
             return -1;
         }
     }
-
+    return 0;
 }
 ssize_t writev(int fd, const struct iovec *iov, int iovcnt)
 {
@@ -290,11 +349,12 @@ ssize_t writev(int fd, const struct iovec *iov, int iovcnt)
         }
         else
         {
-            rt_set_errno();
+            rt_set_errno(-EIO);
             return -1;
         }
 
     }
+    return 0;
 }
 
 

@@ -263,34 +263,113 @@ int fd_open_test(int argc, char *argv[])
 MSH_CMD_EXPORT(fd_open_test, fd_open_test);
 
 
-int rw_v_test(void){
-        char buf1[5],buf2[10];
-        struct iovec iov[2];
-        iov[0].iov_base = buf1;
-        iov[0].iov_len = 5;
-        iov[1].iov_base = buf2;
-        iov[1].iov_len = 10;
- 
-        int fd = open("a.txt",O_RDWR);
-        if(fd < 0){
-                perror("open");
-                return -1;
-        }
-        int rsize = readv(fd, iov, 2);  // 从文件a.txt中读取数据，存到iov[2]中的buf1、buf2
-        printf("rsize = %d\n",rsize);
- 
-        close(fd);
- 
-        fd = open("b.txt", O_RDWR|O_CREAT, S_IRUSR|S_IWUSR);
-        if(fd < 0){
-                perror("open");
-                return -1;
-        }
- 
-        int wsize = writev(fd,iov,2);  // 将iov[2]中的buf1、buf2，写入到文件b.txt
-        printf("wsize = %d\n",wsize);
- 
-        close(fd);
-        return 0;
+//int rw_v_test(void)
+//{
+//    char buf1[5], buf2[10];
+//    struct iovec iov[2];
+//    iov[0].iov_base = buf1;
+//    iov[0].iov_len = 5;
+//    iov[1].iov_base = buf2;
+//    iov[1].iov_len = 10;
+
+//    int fd = open("a.txt", O_RDWR);
+//    if (fd < 0)
+//    {
+//        perror("open");
+//        return -1;
+//    }
+//    int rsize = readv(fd, iov, 2);  // 从文件a.txt中读取数据，存到iov[2]中的buf1、buf2
+//    printf("rsize = %d\n", rsize);
+
+//    close(fd);
+
+//    fd = open("b.txt", O_RDWR | O_CREAT, S_IRUSR | S_IWUSR);
+//    if (fd < 0)
+//    {
+//        perror("open");
+//        return -1;
+//    }
+
+//    int wsize = writev(fd, iov, 2); // 将iov[2]中的buf1、buf2，写入到文件b.txt
+//    printf("wsize = %d\n", wsize);
+
+//    close(fd);
+//    return 0;
+//}
+//MSH_CMD_EXPORT(rw_v_test, rw_v_test);
+
+
+
+extern char *dirname(char *path);
+extern char *basename(char *path);
+int bd_name(int argc, char *argv[])
+{
+    char *files[] =
+    {
+        "/usr/local/nginx/conf/nginx.conf",
+        "./a.out",
+        "/usr/include/libgen.h",
+        NULL
+    };
+
+    char **p = files;
+
+    while (*p)
+    {
+        printf("basename(\"%s\")=%s\n", *p, basename(*p));
+        printf("dirname(\"%s\")=%s\n\n", *p, dirname(*p));
+        *p++;
+    }
+    return 0;
 }
-MSH_CMD_EXPORT(rw_v_test,rw_v_test);
+MSH_CMD_EXPORT(bd_name, base name test);
+
+
+//int sdtvfs_test(const char *path)
+//{
+//    struct statvfs stat;
+
+//    if (statvfs(path, &stat) != 0)
+//    {
+//        // error happens, just quits here
+//        return -1;
+//    }
+
+//    rt_kprintf("f_bsize    is  %d\n", stat.f_bsize);
+//    rt_kprintf("f_frsize   is  %d\n", stat.f_frsize);
+//    rt_kprintf("f_blocks   is  %d\n", stat.f_blocks);
+//    rt_kprintf("f_bfree    is  %d\n", stat.f_bfree);
+//    rt_kprintf("f_bavail   is  %d\n", stat.f_bavail);
+//    rt_kprintf("f_files    is  %d\n", stat.f_files);
+//    rt_kprintf("f_ffree    is  %d\n", stat.f_ffree);
+//    rt_kprintf("f_favail   is  %d\n", stat.f_favail);
+//    rt_kprintf("f_fsid     is  %d\n", stat.f_fsid);
+//    rt_kprintf("f_flag     is  %d\n", stat.f_flag);
+//    rt_kprintf("f_namemax  is  %d\n", stat.f_namemax);
+
+//    // the available size is f_bsize * f_bavail
+//    return 0;
+//}
+//MSH_CMD_EXPORT(sdtvfs_test, statvfs_test);
+
+
+int test1 (void)
+{
+  char str1[]= "To be or not to be";
+  char *str2;
+  char str3[40];
+
+  /* 拷贝到缓冲区: */
+  rt_strncpy ( str2, str1, 3 );
+
+  /* 拷贝 5 个字符: */
+  rt_strncpy ( str3, str1, 5 );
+  str3[5] = '\0';   /* 手动加上终止符 */
+
+  rt_kprintf ("str1 %s\n",str1);
+rt_kprintf ("str2 %s\n",str2);
+    rt_kprintf ("str3 %s\n",str3);
+
+  return 0;
+}
+MSH_CMD_EXPORT(test1,test1);
