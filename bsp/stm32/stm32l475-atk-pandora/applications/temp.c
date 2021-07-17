@@ -10,19 +10,17 @@
 
 #include <temp.h>
 
-/*修改文件存储时间(微秒级)*/
 /*
-The futimens() and utimensat() functions shall set the access and modification times of a file to the values of the times argument
-1>访问时间（access time 简写为atime）
-2>修改时间（modify time 简写为mtime）
-3>状态修改时间(change time 简写为ctime)
-*/
+ * https://pubs.opengroup.org/onlinepubs/9699919799/functions/utimes.html
+ */
 int utimes(const char *path, const struct timeval times[2])
 {
     return 0;
 }
 
-/*返回参数dirp所指向的目录文件的文件描述符，该文件描述符的关闭应由函数closedir()执行*/
+/* 
+ * https://pubs.opengroup.org/onlinepubs/9699919799/functions/dirfd.html
+ */
 int dirfd(DIR *dirp)
 {
     if (dirp != NULL)
@@ -33,8 +31,9 @@ int dirfd(DIR *dirp)
     return -1;
 }
 
-/*因为内部使用了静态数据，所以readdir被认为不是线程安全的函数,因此才有了readdir_r函数的出现*/
-// readdir_r将返回结果填充到调用者提供的entry缓冲区中，保证了它的线程安全性
+/*
+ * https://pubs.opengroup.org/onlinepubs/9699919799/functions/readdir_r.html
+ */
 int readdir_r(DIR *dirp, struct dirent *entry, struct dirent **result)
 {
     int res;
@@ -80,40 +79,28 @@ int readdir_r(DIR *dirp, struct dirent *entry, struct dirent **result)
     return 0;
 }
 
+/*
+ * https://pubs.opengroup.org/onlinepubs/9699919799/basedefs/sys_stat.h.html#tag_13_62
+ * for:
+ * chmod/fchmod/lstat
+ */
 int chmod(const char *path, mode_t mode)
 {
     return 0;
 }
-
 int fchmod(int fildes, mode_t mode)
 {
     return 0;
 }
-
-//lstat()与stat()作用完全相同，都是取得参数file_name所指的文件状态，其差别在于，当文件为符号连接时，lstat()会返回该link本身的状态。详细内容请参考stat()。
-/*获取一些文件相关的信息*/
-//执行成功则返回0，失败返回-1，错误代码存于errno
-
 int lstat(const char *path, struct stat *buf)
 {
-//The lstat() function shall be equivalent to stat(),
-//except when path refers to a symbolic link
-
     stat(path, buf);
     return 0;
 }
 
 /*
-导致当前的线程将暂停执行,直到rqtp参数所指定的时间间隔。
-或者在指定时间间隔内有信号传递到当前线程，将引起当前线程调用信号捕获函数或终止该线程
-
-这个函数功能是暂停某个线程直到你规定的时间后恢复，参数req就是你要暂停的时间，
-其中req->tv_sec是以秒为单位，而tv_nsec以纳秒为单位（10的-9次方秒），范围是[0,999999999]。
-由于调用nanosleep是使线程进入TASK_INTERRUPTIBLE,这种状态是会响应信号而进入TASK_RUNNING状态的，
-这就意味着有可能会没有等到你规定的时间就因为其它信号而唤醒，此时函数返回-1，
-且还剩余的时间会被记录在rem中（rem不为空的情况下）。
-nanosleep可以很好的保留中断时剩余时间,是比sleep()函数更高精度的时间函数
-*/
+ * https://pubs.opengroup.org/onlinepubs/9699919799/functions/nanosleep.html#
+ */
 int nanosleep(const struct timespec *rqtp, struct timespec *rmtp)
 {
     uint16_t time_ms = rqtp->tv_sec * 1000;
@@ -138,10 +125,18 @@ int nanosleep(const struct timespec *rqtp, struct timespec *rmtp)
     return 0;
 }
 
+/*
+ * https://pubs.opengroup.org/onlinepubs/9699919799/basedefs/unistd.h.html#tag_13_80
+ */
 int nice(int inc)
 {
     return 0;
 }
+/*
+ * https://pubs.opengroup.org/onlinepubs/9699919799/basedefs/sys_mman.h.html#tag_13_55
+ * for
+ * msync/mlock/munlock/mprotect/mmap/munmap
+ */
 int msync(void *addr, size_t len, int flags)
 {
     return 0;
@@ -158,7 +153,6 @@ int mprotect(void *addr, size_t len, int prot)
 {
     return 0;
 }
-
 //注意已有
 void *mmap(void *addr, size_t len, int prot, int flags, int fildes, off_t off)
 {
@@ -170,15 +164,8 @@ int munmap(void *addr, size_t len)
     return 0;
 }
 
-//根据路径获取最后的文件名
-//https://pubs.opengroup.org/onlinepubs/9699919799/functions/basename.html#tag_16_32
 /*
- * The basename() function shall take the pathname pointed to by path
- * and return a pointer to the final component of the pathname, deleting any trailing '/' characters
- *
- * @param path: the pathname pointed to by path
- *
- * @return: a pointer to the final component of the pathname, deleting any trailing '/' characters
+ * https://pubs.opengroup.org/onlinepubs/9699919799/functions/basename.html#tag_16_32
  */
 char *basename(char *path)
 {
@@ -203,12 +190,8 @@ char *basename(char *path)
     return dst;
 }
 
-//https://pubs.opengroup.org/onlinepubs/9699919799/functions/dirname.html#tag_16_91
 /*
- *
- *
- * @return: a pointer to a string that is a pathname
- *          of the parent directory of that file
+ * https://pubs.opengroup.org/onlinepubs/9699919799/functions/dirname.html#tag_16_91
  */
 char *dirname(char *path)
 {
@@ -256,11 +239,9 @@ char *dirname(char *path)
     return dst;
 }
 
-
-
-//The statvfs() function shall obtain information about the file system containing the file named by path.
-//the buf argument is a pointer to a statvfs structure that shall be filled. Read, write, or execute permission of the named file is not required.
-//
+/*
+ * https://pubs.opengroup.org/onlinepubs/9699919799/functions/statvfs.html
+ */
 int statvfs(const char *restrict path, struct statvfs *restrict buf)
 {
     int result;
@@ -282,14 +263,11 @@ int statvfs(const char *restrict path, struct statvfs *restrict buf)
 
 }
 
-
 /*
- * (1) 参数：readv和writev的第一个参数fd是个文件描述符，第二个参数是指向iovec数据结构的一个指针，其中iov_base为缓冲区首地址，iov_len为缓冲区长度，参数iovcnt指定了iovec的个数。
- * (2) 返回值：函数调用成功时返回读、写的总字节数，失败时返回-1并设置相应的errno。
+ * https://pubs.opengroup.org/onlinepubs/9699919799/basedefs/sys_uio.h.html#tag_13_68
+ * for
+ * readv/writev
  */
-
-
-
 ssize_t readv(int fd, const struct iovec *iov, int iovcnt)
 {
     int i = 0;
@@ -309,6 +287,7 @@ ssize_t readv(int fd, const struct iovec *iov, int iovcnt)
     }
     return length;
 }
+
 ssize_t writev(int fd, const struct iovec *iov, int iovcnt)
 {
     int i = 0;
@@ -328,15 +307,4 @@ ssize_t writev(int fd, const struct iovec *iov, int iovcnt)
     }
     return length;
 }
-
-
-
-
-
-
-
-
-
-
-
 

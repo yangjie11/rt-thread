@@ -952,19 +952,9 @@ char *getcwd(char *buf, size_t size)
 }
 RTM_EXPORT(getcwd);
 
-
-
-
-//////CHECK  rt_set_errno
 /*
-Upon successful completion, realpath() shall return a pointer to the buffer containing the resolved name.
-Otherwise, realpath() shall return a null pointer and set errno to indicate the error.
-
-If the resolved_name argument is a null pointer, the pointer returned by realpath() can be passed to free().
-
-If the resolved_name argument is not a null pointer and the realpath() function fails,
-the contents of the buffer pointed to by resolved_name are undefined.
-*/
+ * https://pubs.opengroup.org/onlinepubs/9699919799/basedefs/stdlib.h.html#tag_13_50
+ */
 char *realpath(const char *path, char *resolved_path)
 {
     int fd;
@@ -988,7 +978,9 @@ char *realpath(const char *path, char *resolved_path)
     return fullpath;
 }
 
-//转换成功时返回指向该流的文件指针。失败则返回NULL
+/*
+ * https://pubs.opengroup.org/onlinepubs/9699919799/basedefs/stdio.h.html#tag_13_49
+ */
 FILE *fdopen(int fildes, const char *mode)
 {
     FILE *fp;
@@ -1005,6 +997,9 @@ FILE *fdopen(int fildes, const char *mode)
     return fp;
 }
 
+/*
+ * https://pubs.opengroup.org/onlinepubs/9699919799/basedefs/unistd.h.html#tag_13_80
+ */
 int gethostname(char *name, size_t len)
 {
     if (name == NULL)
@@ -1017,13 +1012,9 @@ int gethostname(char *name, size_t len)
 }
 
 
-//readlink("/modules/pass1", buf, sizeof(buf) - 1))
-//获取当前路径
-//执行成功则传符号连接所指的文件路径字符串，失败则返回-1，错误代码存于errno。
-//readlink()会将参数path的 符号链接内容存储到参数buf所指的内存空间，返回的内容不是以\000作字符串结尾，
-//但会将字符串的字符数返回，这使得添加\000变得简单。若参数bufsiz小于符号连接的内容长度，过长的内容会被截断，
-//如果 readlink 第一个参数指向一个文件而不是 符号链接时，readlink 设 置errno 为 EINVAL 并返回 -1。
-//readlink()函数组合了open()、read()和close()的所有操作。
+/*
+ * https://pubs.opengroup.org/onlinepubs/9699919799/basedefs/unistd.h.html#tag_13_80
+ */
 ssize_t readlink(const char *restrict path, char *restrict buf, size_t bufsize)
 {
     struct stat s_buf;
@@ -1034,19 +1025,12 @@ ssize_t readlink(const char *restrict path, char *restrict buf, size_t bufsize)
         rt_set_errno(-EINVAL);
         return -1;
     }
-    
     return 0;
 }
 
-
 /*
-The truncate() function shall cause the regular file named by path
-to have a size which shall be equal to length bytes.
-
-If the file previously was larger than length, the extra data is discarded.
-If the file was previously shorter than length, its size is increased,
-and the extended area appears as if it were zero-filled.
-*/
+ * https://pubs.opengroup.org/onlinepubs/9699919799/basedefs/unistd.h.html#tag_13_80
+ */
 int truncate(const char *path, off_t length)
 {
     int fd;
