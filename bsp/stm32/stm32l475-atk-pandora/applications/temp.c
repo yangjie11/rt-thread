@@ -82,7 +82,7 @@ int readdir_r(DIR *dirp, struct dirent *entry, struct dirent **result)
 /*
  * https://pubs.opengroup.org/onlinepubs/9699919799/basedefs/sys_stat.h.html#tag_13_62
  * for:
- * chmod/fchmod/lstat
+ * chmod/fchmod/lstat 
  */
 int chmod(const char *path, mode_t mode)
 {
@@ -150,16 +150,6 @@ int munlock(const void *addr, size_t len)
     return 0;
 }
 int mprotect(void *addr, size_t len, int prot)
-{
-    return 0;
-}
-//注意已有
-void *mmap(void *addr, size_t len, int prot, int flags, int fildes, off_t off)
-{
-    return 0;
-}
-//注意已有
-int munmap(void *addr, size_t len)
 {
     return 0;
 }
