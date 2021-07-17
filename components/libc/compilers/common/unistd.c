@@ -117,10 +117,9 @@ gid_t getegid(void)
     return 0; /*ROOT*/
 }
 RTM_EXPORT(getegid);
+
 long sysconf(int name)
 {
-  int errcode;
-
   /* NOTE:  The initialize implementation of this interface is very sparse.
    * It was originally created to support only the functionality of
    * getdtablesize() but can be extended to support as much of the standard
@@ -140,3 +139,4 @@ long sysconf(int name)
           return -1;
     }
 }
+

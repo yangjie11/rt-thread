@@ -979,12 +979,12 @@ char *realpath(const char *path, char *resolved_path)
     }
     close(fd);
 
+    fullpath = dfs_normalize_path(NULL, path_name);
     if (resolved_path != NULL)
     {
-        fullpath = resolved_path;
+        strcpy(resolved_path, fullpath);
     }
 
-    fullpath = dfs_normalize_path(NULL, path_name);
     return fullpath;
 }
 
@@ -1001,7 +1001,7 @@ FILE *fdopen(int fildes, const char *mode)
         return NULL;
     }
     fp = fopen(d->path, mode);
-    
+
     return fp;
 }
 
@@ -1022,19 +1022,20 @@ int gethostname(char *name, size_t len)
 //执行成功则传符号连接所指的文件路径字符串，失败则返回-1，错误代码存于errno。
 //readlink()会将参数path的 符号链接内容存储到参数buf所指的内存空间，返回的内容不是以\000作字符串结尾，
 //但会将字符串的字符数返回，这使得添加\000变得简单。若参数bufsiz小于符号连接的内容长度，过长的内容会被截断，
-//如果 readlink 第一个参数指向一个文件而不是 符号链接时，readlink 设 置errno 为 EINVAL 并返回 -1。 
+//如果 readlink 第一个参数指向一个文件而不是 符号链接时，readlink 设 置errno 为 EINVAL 并返回 -1。
 //readlink()函数组合了open()、read()和close()的所有操作。
 ssize_t readlink(const char *restrict path, char *restrict buf, size_t bufsize)
 {
     struct stat s_buf;
-    
-    stat(path,&s_buf);
- 
-    if(S_ISREG(s_buf.st_mode)||(S_ISDIR(s_buf.st_mode)))
+
+    stat(path, &s_buf);
+    if (S_ISREG(s_buf.st_mode) || (S_ISDIR(s_buf.st_mode)))
     {
         rt_set_errno(-EINVAL);
         return -1;
     }
+    
+    return 0;
 }
 
 

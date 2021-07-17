@@ -8,6 +8,8 @@
 #include <unistd.h>
 #include <rtlibc.h>
 
+#include <temp.h>
+
 /*修改文件存储时间(微秒级)*/
 /*
 The futimens() and utimensat() functions shall set the access and modification times of a file to the values of the times argument
@@ -136,8 +138,6 @@ int nanosleep(const struct timespec *rqtp, struct timespec *rmtp)
     return 0;
 }
 
-
-
 int nice(int inc)
 {
     return 0;
@@ -240,42 +240,22 @@ char *dirname(char *path)
     }
     len--;
 
+    if (len > DFS_PATH_MAX)
+    {
+        rt_set_errno(-ENOTDIR);
+
+        return NULL;
+    }
 
     dst0 = rt_malloc(256);
     rt_strncpy(dst0, path, len);
     dst0[len] = '\0';
     dst = dst0;
     rt_free(dst0);
+
     return dst;
 }
 
-
-
-
-
-#define ST_RDONLY             0x0001 /* Mount read-only.  */
-#define ST_NOSUID             0x0002 /* Ignore suid and sgid bits.  */
-
-typedef uint32_t     fsblkcnt_t;
-typedef uint32_t     fsfilcnt_t;
-
-struct statvfs
-{
-    unsigned long f_bsize;   /* File system block size */
-    unsigned long f_frsize;  /* Fundamental file system block size */
-    fsblkcnt_t    f_blocks;  /* Total number of blocks on file system in
-                            * units of f_frsize */
-    fsblkcnt_t    f_bfree;   /* Total number of free blocks */
-    fsblkcnt_t    f_bavail;  /* Number of free blocks available to
-                            * non-privileged process */
-    fsfilcnt_t    f_files;   /* Total number of file serial numbers */
-    fsfilcnt_t    f_ffree;   /* Total number of free file serial numbers */
-    fsfilcnt_t    f_favail;  /* Number of file serial numbers available to
-                            * non-privileged process */
-    unsigned long f_fsid;    /* File system ID */
-    unsigned long f_flag;    /* Bit mask of f_flag values */
-    unsigned long f_namemax; /* Maximum filename length */
-};
 
 
 //The statvfs() function shall obtain information about the file system containing the file named by path.
@@ -284,7 +264,7 @@ struct statvfs
 int statvfs(const char *restrict path, struct statvfs *restrict buf)
 {
     int result;
-    struct statfs buffer;
+    struct statfs buffer = {0};
     result = dfs_statfs(path, &buffer);
     if (result < 0)
     {
@@ -297,7 +277,6 @@ int statvfs(const char *restrict path, struct statvfs *restrict buf)
     buf->f_blocks = buffer.f_blocks;
     buf->f_bfree = buffer.f_bfree;
 
-
     buf->f_flag = ST_RDONLY;//or ST_NOSUID
     return 0;
 
@@ -309,23 +288,18 @@ int statvfs(const char *restrict path, struct statvfs *restrict buf)
  * (2) 返回值：函数调用成功时返回读、写的总字节数，失败时返回-1并设置相应的errno。
  */
 
-struct iovec
-{
-    void *iov_base;  /* Base address of I/O memory region */
-    size_t    iov_len;   /* Size of the memory pointed to by iov_base */
-};
+
 
 ssize_t readv(int fd, const struct iovec *iov, int iovcnt)
 {
     int i = 0;
-    size_t r_len = 0;
+    size_t length = 0;
 
     for (i = 0; i < iovcnt; i++)
     {
-        r_len = iov[i].iov_len;
-        if (read(fd, iov[i].iov_base, r_len) >= 0)
+        if (read(fd, iov[i].iov_base, iov[i].iov_len) >= 0)
         {
-            return r_len;
+            length += iov[i].iov_len;
         }
         else
         {
@@ -333,28 +307,26 @@ ssize_t readv(int fd, const struct iovec *iov, int iovcnt)
             return -1;
         }
     }
-    return 0;
+    return length;
 }
 ssize_t writev(int fd, const struct iovec *iov, int iovcnt)
 {
     int i = 0;
-    size_t w_len = 0;
+    size_t length = 0;
 
     for (i = 0; i < iovcnt; i++)
     {
-        w_len = iov[i].iov_len;
-        if (write(fd, iov[i].iov_base, w_len) >= 0)
+        if (write(fd, iov[i].iov_base, iov[i].iov_len) >= 0)
         {
-            return w_len;
+             length += iov[i].iov_len;
         }
         else
         {
             rt_set_errno(-EIO);
             return -1;
         }
-
     }
-    return 0;
+    return length;
 }
 
 
