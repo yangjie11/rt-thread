@@ -802,4 +802,15 @@ int rt_alarm_system_init(void)
 }
 
 INIT_PREV_EXPORT(rt_alarm_system_init);
+
+
+/* rtc 中断事件 */
+void RTC_Alarm_IRQHandler(void)  
+{
+    rt_interrupt_enter();
+    rt_kprintf("-");
+    rt_alarm_update(NULL,1);
+    rt_interrupt_leave();
+}
+
 #endif

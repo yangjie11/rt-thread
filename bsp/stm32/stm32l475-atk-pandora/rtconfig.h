@@ -85,12 +85,16 @@
 #define RT_USING_SERIAL_V2
 #define RT_SERIAL_USING_DMA
 #define RT_USING_PIN
+#define RT_USING_RTC
+#define RT_USING_ALARM
 
 /* Using USB */
 
 
 /* POSIX layer and C standard library */
 
+#define RT_LIBC_USING_TIME
+#define RT_LIBC_FIXED_TIMEZONE 8
 
 /* Network */
 
@@ -145,6 +149,8 @@
 
 /* system packages */
 
+/* acceleration: Assembly language or algorithmic acceleration packages */
+
 
 /* Micrium: Micrium software products porting for RT-Thread */
 
@@ -161,7 +167,7 @@
 /* samples: kernel and components samples */
 
 
-/* games: games run on RT-Thread console */
+/* entertainment: terminal games and other interesting software packages */
 
 
 /* Privated Packages of RealThread */
@@ -192,6 +198,8 @@
 #define BSP_UART2_TX_USING_DMA
 #define BSP_UART2_RX_BUFSIZE 256
 #define BSP_UART2_TX_BUFSIZE 256
+#define BSP_USING_ONCHIP_RTC
+#define BSP_RTC_USING_LSE
 
 /* Board extended module Drivers */
 

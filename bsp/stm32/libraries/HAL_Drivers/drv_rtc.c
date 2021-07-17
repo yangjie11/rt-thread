@@ -262,13 +262,52 @@ static rt_err_t stm32_rtc_set_secs(void *args)
     return result;
 }
 
+static rt_err_t stm32_rtc_get_alarm(void *args)
+{
+    static RTC_AlarmTypeDef RTC_AlarmStruct = {0};
+    struct rt_rtc_wkalarm *wkalarm = (struct rt_rtc_wkalarm *)args;
+    
+    if(HAL_OK != HAL_RTC_GetAlarm(&RTC_Handler,&RTC_AlarmStruct,RTC_ALARM_B,RTC_FORMAT_BIN))
+    {
+        return RT_ERROR;
+    }  
+   
+    wkalarm->tm_hour = RTC_AlarmStruct.AlarmTime.Hours;
+    wkalarm->tm_min  = RTC_AlarmStruct.AlarmTime.Minutes;
+    wkalarm->tm_sec  = RTC_AlarmStruct.AlarmTime.Seconds;
+
+    LOG_D("get rtc alarm time.");
+    return RT_EOK;
+}
+
+static rt_err_t stm32_rtc_set_alarm(void *args)
+{
+    static RTC_AlarmTypeDef RTC_AlarmStruct= {0};
+    static RTC_DateTypeDef  RTC_DateStruct = {0};
+    struct rt_rtc_wkalarm *wkalarm = (struct rt_rtc_wkalarm *)args;
+    
+    
+    RTC_AlarmStruct.AlarmTime.Seconds = wkalarm->tm_sec;
+    RTC_AlarmStruct.AlarmTime.Minutes = wkalarm->tm_min;
+    RTC_AlarmStruct.AlarmTime.Hours   = wkalarm->tm_hour;
+
+    
+    if(HAL_OK != HAL_RTC_SetAlarm(&RTC_Handler,&RTC_AlarmStruct,RTC_FORMAT_BIN))
+    {
+        return RT_ERROR;
+    }
+       
+    LOG_D("set rtc alarm time.");
+    return RT_EOK;
+}
+
 static const struct rt_rtc_ops stm32_rtc_ops =
 {
     stm32_rtc_init,
     stm32_rtc_get_secs, /* get_secs */
     stm32_rtc_set_secs, /* set secs */
-    RT_NULL,
-    RT_NULL,
+    stm32_rtc_get_alarm,
+    stm32_rtc_set_alarm,
     RT_NULL,
     RT_NULL,
 };
@@ -291,4 +330,9 @@ static int rt_hw_rtc_init(void)
     return RT_EOK;
 }
 INIT_DEVICE_EXPORT(rt_hw_rtc_init);
+
+void HAL_RTC_AlarmAEventCallback(RTC_HandleTypeDef *hrtc)
+{
+    
+}
 #endif /* BSP_USING_ONCHIP_RTC */
